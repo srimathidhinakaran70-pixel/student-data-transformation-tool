@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A beginner-friendly student dataset transformation dashboard.">
+  <title>Student Data Transformation Tool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" aria-label="Student Data Lab home">
+        <span class="brand-mark">S</span><span>Student<span class="brand-light">Lab</span></span>
+      </a>
+      <div class="workspace-label">WORKSPACE</div>
+      <nav class="nav-links">
+        <a class="nav-link active" href="#overview"><span>▦</span> Overview</a>
+        <a class="nav-link" href="#dataset"><span>▤</span> Dataset</a>
+        <a class="nav-link" href="#transform"><span>⌘</span> Transform data</a>
+        <a class="nav-link" href="#compare"><span>⇄</span> Compare results</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="help-card"><span class="help-icon">✦</span><strong>Learning by doing</strong><p>Explore your data, apply changes and export a clean dataset.</p></div>
+        <div class="profile"><div class="avatar">SD</div><div><strong>Student workspace</strong><small>Local session</small></div></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn" aria-label="Toggle navigation">☰</button>
+        <div class="breadcrumbs">Workspace <span>/</span> <strong>Data transformation</strong></div>
+        <div class="top-actions"><span class="local-pill"><i></i> Stored in this browser</span><button class="button button-outline" id="resetTop">↺ Reset data</button></div>
+      </header>
+
+      <section class="page-heading" id="overview">
+        <div><div class="eyebrow">DATA ANALYTICS · INTERNSHIP PROJECT</div><h1>Student Data Transformation</h1><p>Prepare, clean and reshape student records with simple data operations.</p></div>
+        <button class="button button-primary" id="exportTop">↓ Export transformed CSV</button>
+      </section>
+
+      <section class="stats-grid" aria-label="Dataset summary">
+        <article class="stat-card"><div class="stat-top"><span>Total rows</span><span class="stat-icon blue">▤</span></div><strong id="rowCount">0</strong><small>Records in current dataset</small></article>
+        <article class="stat-card"><div class="stat-top"><span>Total columns</span><span class="stat-icon teal">▦</span></div><strong id="columnCount">0</strong><small>Available data fields</small></article>
+        <article class="stat-card"><div class="stat-top"><span>Transformed records</span><span class="stat-icon violet">✧</span></div><strong id="transformedCount">0</strong><small>Rows affected by changes</small></article>
+        <article class="stat-card"><div class="stat-top"><span>Data quality</span><span class="stat-icon amber">✓</span></div><strong id="qualityValue">—</strong><small>Non-empty cells in current view</small></article>
+      </section>
+
+      <section class="content-grid">
+        <article class="panel upload-panel">
+          <div class="panel-heading"><div><h2>Bring in your dataset</h2><p>Upload a CSV file or start with the included sample.</p></div><span class="step-tag">01 · IMPORT</span></div>
+          <label class="drop-zone" for="fileInput" id="dropZone">
+            <span class="upload-icon">↑</span><strong>Drop your CSV file here</strong><span>or <u>browse files</u> from your computer</span><small>CSV format · Maximum 10 MB</small>
+          </label>
+          <input type="file" id="fileInput" accept=".csv,text/csv" hidden>
+          <div class="upload-footer"><span id="fileStatus">Using sample-data.csv</span><button class="text-button" id="loadSample">Reload sample dataset ↗</button></div>
+        </article>
+        <article class="panel chart-panel">
+          <div class="panel-heading"><div><h2>Performance snapshot</h2><p>Average marks by subject</p></div><span class="chart-caption">CURRENT DATA</span></div>
+          <div class="chart-wrap"><canvas id="marksChart" aria-label="Average marks by subject"></canvas></div>
+        </article>
+      </section>
+
+      <section class="panel dataset-panel" id="dataset">
+        <div class="panel-heading dataset-heading"><div><span class="step-tag">02 · EXPLORE</span><h2>Dataset preview</h2><p>Search, sort and inspect your student records.</p></div><div class="table-actions"><label class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="Search records..." aria-label="Search records"></label><button class="button button-outline button-small" id="downloadOriginal">↓ Original CSV</button></div></div>
+        <div class="table-meta"><span id="tableInfo">Showing 0 records</span><span class="hint">Select a column heading to sort ↕</span></div>
+        <div class="table-scroll"><table id="dataTable"><thead></thead><tbody></tbody></table></div>
+        <div class="table-footer"><span id="pageInfo">No records</span><div class="pagination"><button id="prevPage" aria-label="Previous page" disabled>‹</button><button id="nextPage" aria-label="Next page" disabled>›</button></div></div>
+      </section>
+
+      <section class="panel transform-panel" id="transform">
+        <div class="panel-heading"><div><span class="step-tag">03 · TRANSFORM</span><h2>Transformation studio</h2><p>Choose an operation, configure it and apply it to your working copy.</p></div><span class="safe-tag">Original data protected</span></div>
+        <div class="transform-grid">
+          <div class="transform-card">
+            <div class="tool-icon">✎</div><h3>Rename a column</h3><p>Give a field a clearer, meaningful name.</p>
+            <label>Column<select id="renameColumn"></select></label><label>New column name<input id="newColumnName" placeholder="e.g. Student Name"></label>
+            <button class="button button-primary full" id="renameBtn">Rename column</button>
+          </div>
+          <div class="transform-card">
+            <div class="tool-icon teal-icon">⇄</div><h3>Change data type</h3><p>Convert values to text, numbers or dates.</p>
+            <label>Column<select id="typeColumn"></select></label><label>Convert to<select id="dataType"><option value="text">Text</option><option value="number">Number</option><option value="date">Date</option></select></label>
+            <button class="button button-primary full" id="typeBtn">Convert type</button>
+          </div>
+          <div class="transform-card">
+            <div class="tool-icon purple-icon">⌕</div><h3>Filter records</h3><p>Keep only rows matching a condition.</p>
+            <label>Column<select id="filterColumn"></select></label><div class="two-fields"><label>Condition<select id="filterOperator"><option value="equals">Equals</option><option value="not_equals">Does not equal</option><option value="contains">Contains</option><option value="gt">Greater than</option><option value="gte">At least</option><option value="lt">Less than</option><option value="lte">At most</option><option value="not_empty">Is not empty</option><option value="empty">Is empty</option></select></label><label>Value<input id="filterValue" placeholder="e.g. Chennai"></label></div>
+            <button class="button button-primary full" id="filterBtn">Apply filter</button>
+          </div>
+          <div class="transform-card">
+            <div class="tool-icon amber-icon">↕</div><h3>Sort dataset</h3><p>Order records by any selected field.</p>
+            <label>Column<select id="sortColumn"></select></label><label>Sort order<select id="sortDirection"><option value="asc">Ascending (A → Z)</option><option value="desc">Descending (Z → A)</option></select></label>
+            <button class="button button-primary full" id="sortBtn">Sort records</button>
+          </div>
+          <div class="transform-card">
+            <div class="tool-icon teal-icon">Aa</div><h3>Normalize text</h3><p>Trim spaces and standardize text capitalization.</p>
+            <label>Column<select id="normalizeColumn"></select></label><label>Format<select id="textFormat"><option value="title">Title Case</option><option value="upper">UPPERCASE</option><option value="lower">lowercase</option><option value="trim">Trim spaces only</option></select></label>
+            <button class="button button-primary full" id="normalizeBtn">Normalize values</button>
+          </div>
+          <div class="transform-card">
+            <div class="tool-icon purple-icon">＋</div><h3>Create calculated column</h3><p>Calculate totals, averages or grade categories.</p>
+            <label>New column name<input id="calcName" value="Total Marks" placeholder="e.g. Average Marks"></label><label>Calculation<select id="calcType"><option value="total">Total of numeric columns</option><option value="average">Average of numeric columns</option><option value="grade">Grade from total marks</option><option value="category">Performance category</option></select></label>
+            <button class="button button-primary full" id="calcBtn">Create column</button>
+          </div>
+          <div class="transform-card">
+            <div class="tool-icon amber-icon">⊖</div><h3>Remove a column</h3><p>Remove fields that are not needed for analysis.</p>
+            <label>Column<select id="removeColumn"></select></label><button class="button button-danger full" id="removeBtn">Remove column</button>
+          </div>
+          <div class="transform-card multi-card">
+            <div class="tool-icon">☑</div><h3>Apply a quick clean</h3><p>Select multiple cleanup operations and apply them together.</p>
+            <div class="check-list"><label><input type="checkbox" id="multiTrim" checked> Trim whitespace in all text fields</label><label><input type="checkbox" id="multiBlanks"> Replace empty cells with “N/A”</label><label><input type="checkbox" id="multiNumbers"> Convert numeric-looking values to numbers</label></div>
+            <button class="button button-primary full" id="multiBtn">Apply selected operations</button>
+          </div>
+        </div>
+        <div class="studio-footer"><span id="actionMessage" role="status">Ready when you are. Your original dataset remains unchanged.</span><div><button class="button button-outline" id="undoBtn">↶ Undo last change</button><button class="button button-outline" id="resetBtn">Reset all changes</button></div></div>
+      </section>
+
+      <section class="panel compare-panel" id="compare">
+        <div class="panel-heading"><div><span class="step-tag">04 · REVIEW</span><h2>Before & after</h2><p>Review the original and transformed data side by side.</p></div><span class="change-count" id="changeBadge">0 changes</span></div>
+        <div class="compare-grid"><div class="compare-box"><div class="compare-title"><span class="dot grey-dot"></span><strong>Original dataset</strong><small id="originalMeta">—</small></div><div class="compare-metrics" id="originalPreview">Load a dataset to preview it.</div></div><div class="compare-box after-box"><div class="compare-title"><span class="dot teal-dot"></span><strong>Transformed dataset</strong><small id="currentMeta">—</small></div><div class="compare-metrics" id="currentPreview">Your changes will appear here.</div></div></div>
+      </section>
+      <footer class="footer"><span>StudentLab · Student Data Transformation Tool</span><span>Made for learning · Data stays in your browser</span></footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
